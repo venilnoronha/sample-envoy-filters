@@ -8,15 +8,12 @@ static_resources:
   clusters:
     name: cluster_0
     connect_timeout: 1s
-    load_assignment:
-      cluster_name: cluster_0
-      endpoints:
-        - lb_endpoints:
-            - endpoint:
-                address:
-                  socket_address:
-                    address: 127.0.0.1
-                    port_value: 8002
+    type: strict_dns
+    lb_policy: round_robin
+    hosts:
+    - socket_address:
+        address: 127.0.0.1
+        port_value: 8002
   listeners:
     name: listener_0
     address:
@@ -27,3 +24,8 @@ static_resources:
     - filters:
       - name: envoy.filters.network.ping
         config:
+          convert_to_upper: true
+      - name: envoy.tcp_proxy
+        config:
+          stat_prefix: ingress_tcp
+          cluster: cluster_0

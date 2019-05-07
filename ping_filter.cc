@@ -25,21 +25,23 @@ Network::FilterStatus PingFilter::onData(Buffer::Instance& data, bool) {
   const uint64_t len = data.length();
   std::string in_str = std::string(static_cast<char*>(data.linearize(len)), len);
   ENVOY_CONN_LOG(info, "ping: read a {} byte string on read path with value {}", read_callbacks_->connection(), len, in_str);
-  data.drain(len);
 
-  if (absl::StartsWithIgnoreCase(in_str, "ping")) {
+  if (absl::EqualsIgnoreCase(in_str, "ping\n")) {
     config_->stats_.total_pings_.inc();
   } else {
     config_->stats_.total_errors_.inc();
+    data.drain(len);
+    return Network::FilterStatus::StopIteration;
   }
 
-  std::string out_str = in_str;
-  std::transform(out_str.begin(), out_str.end(), out_str.begin(), ::toupper);
-  Buffer::OwnedImpl out_data(out_str);
+  if (config_->convert_to_upper_) {
+    std::string upper_str = in_str;
+    std::transform(upper_str.begin(), upper_str.end(), upper_str.begin(), ::toupper);
+    data.drain(len);
+    data.add(upper_str);
+  }
 
-  read_callbacks_->connection().write(out_data, false);
-  ENVOY_CONN_LOG(info, "ping: wrote a {} byte string on read path with value {}", read_callbacks_->connection(), len, out_str);
-  return Network::FilterStatus::StopIteration;
+  return Network::FilterStatus::Continue;
 }
 
 Network::FilterStatus PingFilter::onWrite(Buffer::Instance& data, bool) {
