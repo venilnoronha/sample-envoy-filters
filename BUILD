@@ -7,6 +7,11 @@ load(
     "envoy_cc_test",
 )
 
+load(
+    "@envoy_api//bazel:api_build_system.bzl",
+    "api_proto_library",
+)
+
 envoy_cc_binary(
     name = "envoy",
     repository = "@envoy",
@@ -17,9 +22,9 @@ envoy_cc_binary(
 )
 
 envoy_cc_library(
-    name = "ping_lib",
-    srcs = ["ping.cc"],
-    hdrs = ["ping.h"],
+    name = "ping_filter_lib",
+    srcs = ["ping_filter.cc"],
+    hdrs = ["ping_filter.h"],
     repository = "@envoy",
     deps = [
         "@envoy//include/envoy/buffer:buffer_interface",
@@ -31,12 +36,21 @@ envoy_cc_library(
     ],
 )
 
+api_proto_library(
+    name = "ping_filter_proto",
+    srcs = ["ping_filter.proto"],
+)
+
 envoy_cc_library(
     name = "ping_config",
     srcs = ["ping_config.cc"],
+    hdrs = ["ping_config.h"],
     repository = "@envoy",
     deps = [
-        ":ping_lib",
+        ":ping_filter_lib",
+        ":ping_filter_proto_cc",
+        "@envoy//source/extensions/filters/network:well_known_names",
+        "@envoy//source/extensions/filters/network/common:factory_base_lib",
         "@envoy//include/envoy/network:filter_interface",
         "@envoy//include/envoy/registry:registry",
         "@envoy//include/envoy/server:filter_config_interface",

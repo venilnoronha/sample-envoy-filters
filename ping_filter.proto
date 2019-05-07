@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package config;
+
+message PingFilter {
+  // Specifies whether a protocol message must be converted to upper case.
+  bool convert_to_upper = 1;
+}

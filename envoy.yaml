@@ -25,5 +25,5 @@ static_resources:
         port_value: 8000
     filter_chains:
     - filters:
-      - name: ping
+      - name: envoy.filters.network.ping
         config:

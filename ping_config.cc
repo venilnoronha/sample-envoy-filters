@@ -1,42 +1,35 @@
 #include <string>
 
-#include "ping.h"
+#include "ping_config.h"
 
 #include "envoy/registry/registry.h"
 #include "envoy/server/filter_config.h"
 
 namespace Envoy {
-namespace Server {
-namespace Configuration {
+namespace Extensions {
+namespace NetworkFilters {
+namespace Ping {
 
 /**
- * Config registration for the ping filter. @see NamedNetworkFilterConfigFactory.
+ * Config registration for the Ping filter. @see NamedNetworkFilterConfigFactory.
  */
-class PingConfigFactory : public NamedNetworkFilterConfigFactory {
-public:
-  Network::FilterFactoryCb createFilterFactoryFromProto(const Protobuf::Message&,
-                                                        FactoryContext&) override {
-    return [](Network::FilterManager& filter_manager) -> void {
-      filter_manager.addReadFilter(Network::ReadFilterSharedPtr{new Filter::Ping()});
-    };
-  }
-
-  ProtobufTypes::MessagePtr createEmptyConfigProto() override {
-    return ProtobufTypes::MessagePtr{new Envoy::ProtobufWkt::Empty()};
-  }
-
-  std::string name() override { return "ping"; }
-
-  Network::FilterFactoryCb createFilterFactory(const Json::Object&, FactoryContext&) override {
-    NOT_IMPLEMENTED_GCOVR_EXCL_LINE;
-  }
-};
+Network::FilterFactoryCb
+PingConfigFactory::createFilterFactoryFromProtoTyped(
+    const config::PingFilter& proto_config,
+    Server::Configuration::FactoryContext& context) {
+  PingFilterConfigSharedPtr filter_config(
+      std::make_shared<PingFilterConfig>(proto_config.convert_to_upper(), context.scope()));
+  return [filter_config](Network::FilterManager& filter_manager) -> void {
+    filter_manager.addFilter(std::make_shared<PingFilter>(filter_config));
+  };
+}
 
 /**
- * Static registration for the ping filter. @see RegisterFactory.
+ * Static registration for the Ping filter. @see RegisterFactory.
  */
-static Registry::RegisterFactory<PingConfigFactory, NamedNetworkFilterConfigFactory> registered_;
+REGISTER_FACTORY(PingConfigFactory, Server::Configuration::NamedNetworkFilterConfigFactory);
 
-} // namespace Configuration
-} // namespace Server
+} // namespace Ping
+} // namespace NetworkFilters
+} // namespace Extensions
 } // namespace Envoy
