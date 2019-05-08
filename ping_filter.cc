@@ -3,7 +3,6 @@
 
 #include "ping_filter.h"
 
-#include "envoy/buffer/buffer.h"
 #include "envoy/network/connection.h"
 
 #include "common/buffer/buffer_impl.h"

@@ -27,7 +27,6 @@ envoy_cc_library(
     hdrs = ["ping_filter.h"],
     repository = "@envoy",
     deps = [
-        "@envoy//include/envoy/buffer:buffer_interface",
         "@envoy//include/envoy/network:connection_interface",
         "@envoy//include/envoy/network:filter_interface",
         "@envoy//source/common/buffer:buffer_lib",
@@ -49,10 +48,9 @@ envoy_cc_library(
     deps = [
         ":ping_filter_lib",
         ":ping_filter_proto_cc",
-        "@envoy//source/extensions/filters/network:well_known_names",
-        "@envoy//source/extensions/filters/network/common:factory_base_lib",
-        "@envoy//include/envoy/network:filter_interface",
         "@envoy//include/envoy/registry:registry",
         "@envoy//include/envoy/server:filter_config_interface",
+        "@envoy//source/extensions/filters/network:well_known_names",
+        "@envoy//source/extensions/filters/network/common:factory_base_lib",
     ],
 )
