@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ping_filter.h"
-#include "ping_filter.pb.h"
-#include "ping_filter.pb.validate.h"
+#include "ping_filter/ping_filter.pb.h"
+#include "ping_filter/ping_filter.pb.validate.h"
 
 #include "extensions/filters/network/common/factory_base.h"
 #include "extensions/filters/network/well_known_names.h"
