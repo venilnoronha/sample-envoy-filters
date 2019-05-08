@@ -46,8 +46,12 @@ Network::FilterStatus PingFilter::onData(Buffer::Instance& data, bool) {
 
 Network::FilterStatus PingFilter::onWrite(Buffer::Instance& data, bool) {
   const uint64_t len = data.length();
-  std::string in_str = std::string(static_cast<char*>(data.linearize(len)), len);
-  ENVOY_CONN_LOG(info, "ping: read a {} byte string on write path with value {}", read_callbacks_->connection(), len, in_str);
+  std::string out_str = std::string(static_cast<char*>(data.linearize(len)), len);
+  ENVOY_CONN_LOG(info, "ping: read a {} byte string on write path with value {}", read_callbacks_->connection(), len, out_str);
+
+  if (absl::EqualsIgnoreCase(out_str, "pong\n")) {
+    config_->stats_.total_pongs_.inc();
+  }
   return Network::FilterStatus::Continue;
 }
 

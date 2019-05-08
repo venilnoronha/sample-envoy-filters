@@ -18,6 +18,7 @@ namespace Ping {
 // clang-format off
 #define ALL_PING_FILTER_STATS(COUNTER)                                           \
   COUNTER(total_pings)                                                           \
+  COUNTER(total_pongs)                                                           \
   COUNTER(total_errors)                                                          \
 // clang-format on
 
